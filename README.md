@@ -48,10 +48,11 @@ protected List<ReactPackage> getPackages() {
 
 ### Example NEW
 ```js
-dataURI = 'data:image/jpeg;base64,' + <BASE64HERE>;
+var dataURI = 'data:image/jpeg;base64,' + <BASE64HERE>;
 
-QRCode.decode(dataURI, (error, result2)=>{
-  var result3 = JSON.stringify({error, result2})
+QRCode.decode(dataURI, (error, result)=>{
+  var finalResult = JSON.stringify({error, result});
+  console.log(finalResult);
 });
 ```
 
