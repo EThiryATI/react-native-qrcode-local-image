@@ -46,6 +46,15 @@ protected List<ReactPackage> getPackages() {
 
 ## Usage
 
+### Example NEW
+```js
+dataURI = 'data:image/jpeg;base64,' + <BASE64HERE>;
+
+QRCode.decode(dataURI, (error, result2)=>{
+  var result3 = JSON.stringify({error, result2})
+});
+```
+
 ### Example
 ```js
 'use strict';
