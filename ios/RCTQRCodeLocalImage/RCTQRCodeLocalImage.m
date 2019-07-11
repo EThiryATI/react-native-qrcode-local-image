@@ -19,6 +19,13 @@ RCT_EXPORT_METHOD(decode:(NSString *)path callback:(RCTResponseSenderBlock)callb
     UIImage *srcImage;
     if ([path hasPrefix:@"http://"] || [path hasPrefix:@"https://"]) {
         srcImage = [UIImage imageWithData: [NSData dataWithContentsOfURL:[NSURL URLWithString: path]]];
+    } else if ([path hasPrefix:@"data:image/jpeg;base64,"]) {
+        NSRange replaceRange = [path rangeOfString:@"data:image/jpeg;base64,"];
+        if (replaceRange.location != NSNotFound){
+            path = [path stringByReplacingCharactersInRange:replaceRange withString:@""];
+        }
+        NSData *data = [[NSData alloc]initWithBase64EncodedString:path options:NSDataBase64DecodingIgnoreUnknownCharacters];
+        srcImage = [UIImage imageWithData:data];
     } else {
         srcImage = [[UIImage alloc] initWithContentsOfFile:path];
     }
@@ -37,12 +44,19 @@ RCT_EXPORT_METHOD(decode:(NSString *)path callback:(RCTResponseSenderBlock)callb
         callback(@[RCTMakeError(@"Feature size is zero!", nil, nil)]);
         return;
     }
-    
+
     CIQRCodeFeature *feature = [features firstObject];
-    
-    NSString *result = feature.messageString;
-    NSLog(@"result: %@", result);
-    
+    NSLog(@"feature: %@", feature);
+
+    NSMutableDictionary *result = [NSMutableDictionary dictionaryWithDictionary:@{
+                                                                                  @"type" : feature.type,
+                                                                                  @"data" : feature.messageString,
+                                                                                  @"bottomLeft" : NSStringFromCGPoint(feature.bottomLeft),
+                                                                                  @"topLeft" : NSStringFromCGPoint(feature.topLeft),
+                                                                                  @"topRight" : NSStringFromCGPoint(feature.topRight),
+                                                                                  @"bottomRight" : NSStringFromCGPoint(feature.bottomRight),
+                                                                                  }];
+
     if (result) {
         callback(@[[NSNull null], result]);
     } else {
